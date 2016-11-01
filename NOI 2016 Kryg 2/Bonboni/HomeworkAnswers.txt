@@ -1,0 +1,259 @@
+1. Write a SQL query to find the names and salaries of the employees that take the minimal salary in the company. Use a nested SELECT statement.
+
+USE TelerikAcademy
+
+SELECT FirstName, LastName, Salary
+FROM Employees
+WHERE Salary = 
+  (SELECT MIN(Salary) FROM Employees)
+  
+2. Write a SQL query to find the names and salaries of the employees that have a salary that is up to 10% higher than the minimal salary for the company.
+
+USE TelerikAcademy
+
+SELECT FirstName, LastName, Salary
+FROM Employees
+WHERE Salary <=
+  ((SELECT MIN(Salary) FROM Employees) + (SELECT MIN(Salary) FROM Employees)/10)
+  
+3. Write a SQL query to find the full name, salary and department of the employees that take the minimal salary in their department.
+
+USE TelerikAcademy
+
+SELECT FirstName, LastName, DepartmentID, Salary
+FROM Employees e
+WHERE Salary = 
+  (SELECT MAX(Salary) FROM Employees 
+   WHERE DepartmentID = e.DepartmentID)
+ORDER BY DepartmentID
+
+4. Write a SQL query to find the average salary in the department #1.
+
+USE TelerikAcademy
+
+SELECT AVG(Salary) as AvarageSalary
+FROM Employees 
+WHERE DepartmentID = 1
+
+5. Write a SQL query to find the average salary in the "Sales" department.
+
+USE TelerikAcademy
+
+SELECT AVG(Salary) as AvarageSalary
+FROM Employees e
+WHERE DepartmentID = 
+	(SELECT DepartmentID FROM Departments d
+	 WHERE LOWER(d.Name) = 'sales')
+
+6. Write a SQL query to find the number of employees in the "Sales" department.
+
+USE TelerikAcademy
+
+SELECT COUNT(e.EmployeeID) as EmployersWorkingAtSalesCount
+FROM Employees e
+WHERE DepartmentID = 
+	(SELECT DepartmentID FROM Departments d
+	 WHERE LOWER(d.Name) = 'sales')
+
+7. Write a SQL query to find the number of all employees that have manager.
+
+USE TelerikAcademy
+
+SELECT COUNT(e.EmployeeID) as EmployersThatHaveManager
+FROM Employees e
+WHERE e.ManagerID IS NOT NULL
+
+8. Write a SQL query to find the number of all employees that have no manager.
+
+USE TelerikAcademy
+
+SELECT COUNT(e.EmployeeID) as EmployersThatHaveManager
+FROM Employees e
+WHERE e.ManagerID IS NULL
+
+9. Write a SQL query to find all departments and the average salary for each of them.
+
+USE TelerikAcademy
+
+SELECT d.Name as DepartmentName, AVG(Salary) as AvarageSalary FROM Employees e, Departments d
+WHERE e.DepartmentID = d.DepartmentID
+GROUP BY d.Name
+
+10. Write a SQL query to find the count of all employees in each department and for each town.
+
+USE TelerikAcademy
+
+SELECT d.Name as DepartmentName, AVG(Salary) as AvarageSalary, COUNT(d.Name) as Count FROM Employees e, Departments d
+WHERE e.DepartmentID = d.DepartmentID
+GROUP BY d.Name
+
+11. Write a SQL query to find all managers that have exactly 5 employees. Display their first name and last name.
+
+USE TelerikAcademy
+
+SELECT (m.FirstName + ' ' + m.LastName) as ManagerName, m.EmployeeID as ManagerId, COUNT(*) AS Count FROM Employees m, Employees e
+WHERE m.EmployeeID = e.ManagerID
+GROUP BY m.FirstName, m.LastName, m.EmployeeID
+
+12. Write a SQL query to find all employees along with their managers. For employees that do not have manager display the value "(no manager)".
+
+USE TelerikAcademy
+
+SELECT CASE 
+            WHEN ManagerID IS NULL
+               THEN 'No Manager'
+               ELSE 'Manager' 
+       END as IsManager, *  FROM Employees m
+
+13. Write a SQL query to find the names of all employees whose last name is exactly 5 characters long. Use the built-in LEN(str) function.
+
+USE TelerikAcademy
+
+SELECT * FROM Employees
+WHERE LEN(LastName) = 5
+
+14. Write a SQL query to display the current date and time in the following format "day.month.year hour:minutes:seconds:milliseconds". Search in Google to find how to format dates in SQL Server.
+
+USE TelerikAcademy
+
+SELECT GETDATE()
+
+15. Write a SQL statement to create a table Users. Users should have username, password, full name and last login time. Choose appropriate data types for the table fields. Define a primary key column with a primary key constraint. Define the primary key column as identity to facilitate inserting records. Define unique constraint to avoid repeating usernames. Define a check constraint to ensure the password is at least 5 characters long.
+
+CREATE TABLE Users (
+  Id int IDENTITY,
+  Username nvarchar(100) NOT NULL UNIQUE,
+  Password nvarchar(100) NOT NULL,
+  FullName nvarchar(100),
+  LastLogin date,
+  CONSTRAINT MY_TABLE_PASSWORD_CK CHECK (LEN(Password) >= 5),
+  CONSTRAINT PK_Persons PRIMARY KEY(Id)
+)
+GO
+
+16. Write a SQL statement to create a view that displays the users from the Users table that have been in the system today. Test if the view works correctly.
+
+USE TelerikAcademy
+
+SELECT * FROM Users
+WHERE GETDATE() = Users.LastLogin
+
+17. Write a SQL statement to create a table Groups. Groups should have unique name (use unique constraint). Define primary key and identity column.
+
+CREATE TABLE Groups (
+  Id int IDENTITY,
+  Name nvarchar(100) NOT NULL UNIQUE,
+  CONSTRAINT PK_GRName PRIMARY KEY(Id)
+)
+GO
+
+18. Write a SQL statement to add a column GroupID to the table Users. Fill some data in this new column and as well in the `Groups table. Write a SQL statement to add a foreign key constraint between tables Users and Groups tables.
+
+ALTER TABLE Users
+ADD GroupID int
+
+19. Write SQL statements to insert several records in the Users and Groups tables.
+
+INSERT INTO Users
+VALUES ('Ivanf','Dragan','iVANdRAGAS', NULL, 5),
+('Dragan','Dragan','Bannasd', NULL, 2),
+('Pesho','Ivsasn','iVANdRAGAS', NULL, 1),
+('Ivana','Dragan','Bannasd', NULL, 3),
+('Bannasd','Drafgan','iVANdRAGAS', NULL, 4);
+
+INSERT INTO Groups
+VALUES ('Hello'),
+('Darkness'),
+('My Old Friend'),
+('Moms Spaghetti');
+
+20. Write SQL statements to update some of the records in the Users and Groups tables.
+
+UPDATE Groups
+SET Name = 'Not Name'
+WHERE Id = 2
+
+21. Write SQL statements to delete some of the records from the Users and Groups tables.
+
+DELETE FROM Groups
+WHERE Id=2
+
+22. Write SQL statements to insert in the Users table the names of all employees from the Employees table. Combine the first and last names as a full name. For username use the first letter of the first name + the last name (in lowercase). Use the same for the password, and NULL for last login time.
+
+INSERT INTO Users
+(Username, Password, FullName, GroupId)
+SELECT (LEFT(FirstName, 1) + LOWER(LastName) + CONVERT(nvarchar, EmployeeID)), (LEFT(FirstName, 1) + LOWER(LastName) + 'AAAAA'), (FirstName + ' ' + LastName), 11
+FROM Employees
+
+23. Write a SQL statement that changes the password to NULL for all users that have not been in the system since 10.03.2010.
+
+INSERT INTO Users
+(Password)
+SELECT Password
+FROM Users
+WHERE LastLogin BETWEEN '9/03/2010' AND '11/03/2010.'
+
+24. Write a SQL statement that deletes all users without passwords (NULL password).
+
+DELETE FROM Users
+WHERE Password IS NULL
+
+25. Write a SQL query to display the average employee salary by department and job title.
+
+SELECT DepartmentID, JobTitle, AVG(Salary) FROM Employees
+GROUP BY DepartmentID, JobTitle
+
+26. Write a SQL query to display the minimal employee salary by department and job title along with the name of some of the employees that take it.
+
+SELECT DepartmentID, JobTitle, MIN(Salary) FROM Employees
+GROUP BY DepartmentID, JobTitle
+
+27. Write a SQL query to display the town where maximal number of employees work.
+
+SELECT AddressID, COUNT(FirstName) as Workers FROM Employees
+GROUP BY AddressID
+
+28. Write a SQL query to display the number of managers from each town.
+
+SELECT AddressID, COUNT(FirstName) as Workers FROM Employees
+WHERE ManagerID IS NULL
+GROUP BY AddressID
+
+29. Write a SQL to create table WorkHours to store work reports for each employee (employee id, date, task, hours, comments).
+
+USE TelerikAcademy
+
+CREATE TABLE WorkHours (
+  Id int IDENTITY,
+  WorkReports text,
+  EmployeeId int,
+  Task text,
+  Hours int,
+  Comments text,
+  CONSTRAINT PK_bgName PRIMARY KEY(Id)
+)
+
+GO
+
+INSERT INTO WorkHours
+(WorkReports, EmployeeId, Task, Hours, Comments)
+SELECT 'Report',5,'Task Some', 12, 'This is comment'
+
+30. Start a database transaction, delete all employees from the 'Sales' department along with all dependent records from the pother tables.
+
+USE TelerikAcademy
+
+ALTER TABLE Departments NOCHECK CONSTRAINT [FK_Departments_Employees]
+
+DELETE FROM Employees
+WHERE DepartmentID =
+	(SELECT DepartmentID FROM Departments
+	 WHERE LOWER(Name) = 'sales')
+
+31. Start a database transaction and drop the table EmployeesProjects.
+
+USE TelerikAcademy
+
+DROP TABLE EmployeesProjects
+
+
