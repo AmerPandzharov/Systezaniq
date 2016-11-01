@@ -19,15 +19,25 @@ int main()
     long a,b,c;
     cin>>a>>b>>c;
     long res = 0;
-
+    bool isFirst = true;
     res+=3;
     a -= 1;
     b -= 1;
     c -= 1;
 
-    bool isFirst = true;
-
-    while(true)
+    if(a < 0)
+    {
+        res = 0;
+    }
+    else if(b < 0)
+    {
+        res = 1;
+    }
+    else if(c < 0)
+    {
+        res = 2;
+    }
+    else {while(true)
     {
         if(a == 0 || b == 0 || c == 0)
         {
@@ -58,14 +68,18 @@ int main()
         }
         else if (b - 1 > 0)
         {
-            res += 3;
+            res += 2;
         }
     }
-    else
+    else if(b == 0 && a == 0)
     {
         res += 1;
     }
-
+    else if(b == 0 && c == 0)
+    {
+        res += 1;
+    }
+    }
     cout<<res<<endl;
     return 0;
 }
