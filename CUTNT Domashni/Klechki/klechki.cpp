@@ -34,4 +34,6 @@ int main()
         cout<<dul1<<" "<<dul3<<endl;
     }
     return 0;
+	
+	//Alabala
 }
